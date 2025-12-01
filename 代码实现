@@ -1,0 +1,108 @@
+//第一步：定义一个顺序表
+#include<stdio.h>
+#define MAXSIZE  100//设置一个长度等于100，用于下面数组作为一个基础用于存储以下这个顺序线性表
+typedef int ElemType;//给下面的SeqList(顺序表)数据类型起别名为 ElemType
+
+typedef struct {
+	ElemType data[MAXSIZE];	//声明一个整数类型的数组，长度为100,相当于int data[100],因为上面已经起过int类型的别名了
+	int length;//length表示数组里面的长度
+}SeqList;
+
+//第二步：初始化
+void intiList(SeqList* L)//传一个线性表里具体结构体变量的地址作为该函数的参数
+{
+	L->length = 0;//使线性表长度为零，初始化
+}
+
+//第三步：在尾部添加元素
+int appendElem(SeqList* L, ElemType e)//定义一个appendElem函数，传入顺序表结构体的指针变量L*，和一个ElemTyp(即int)类型的元素e（该元素是要添加的元素）
+{
+	if (L->length >= MAXSIZE)//如果（*L）.length>=MAXSIZE
+	{
+		printf("顺序表已满\n");
+		return 0;
+	}
+	L->data[L->length] = e;//如果没满,往数组data里加入元素e，即(*L).data[0]=e,因为上面length已经初始化为0了
+	L->length++;//最后length的长度也要变
+}//这里的指针L是指向要访问的结构体内部的成员（如length和data），需要指针L间接访问它，
+
+//第四步：顺序表的遍历
+void listElem(SeqList* L)
+{
+	for (int i = 0; i < L->length; i++)
+	{
+		printf("%d ", L->data[i]);
+	}
+	printf("\n");
+}
+
+//第五步：插入
+int insertElem(SeqList* L, int pos, ElemType e)//从左往右依次为指针，位置，要插入的元素，这里的pos是从1开始数的
+{
+	if (L->length >= MAXSIZE)
+	{
+		printf("表已经满了\n");
+			return 0;
+	}
+	if (pos<1 || pos>L->length)//符号||是或者的意思
+	{
+		printf("插入位置错误\n");
+		return 0;
+	}
+	if (pos <= L->length)
+	{
+		for (int i = L->length - 1; i >= pos; i--)//i从最后一个元素开始，因为数组的下标是0到8，则长度是9
+		{
+			L->data[i + 1] = L->data[i];//把前一个值赋值给后一个，依次往后挪让位置
+		}
+		L->data[pos - 1] = e;//插入新元素e
+		L->length++;//长度也加上
+	}
+	return 1;
+}
+
+
+//第六部：删除
+int deletElem(SeqList* L, int pos, ElemType* e)
+{
+	if (L->length == 0)
+	{
+		printf("这是一个空表\n");
+		return 0;
+	}
+	if (pos<1 || pos>L->length)
+	{
+		printf("删除位置有误\n");
+		return 0;
+	}
+	*e = L->data[pos - 1];//把要删除的数提取出来
+	if (pos < L->length)
+	{
+		for (int i = pos; i < L->length; i++)
+		{
+			L->data[i - 1] = L->data[i];//后一位把前一位给覆盖掉
+		}
+		L->length--;//自减一
+		return 1;
+	}
+}
+
+int main(int argc, char const* argv[])//是灵活接受用户的输入
+{
+	SeqList list;//声明一个列表
+	intiList(&list);//调用上面的函数使其初始化
+	printf("初始化成功，目前长度占用%d\n", list.length);
+	printf("目前占用内存%zu字节\n", sizeof(list.data));//%zu是格式说明符，专门打印字节大小类型
+	appendElem(&list, 1);//调用上面的尾部添加元素的函数
+	appendElem(&list, 2);
+	appendElem(&list, 3);
+	appendElem(&list, 4);
+	listElem(&list);//调用上面的遍历函数
+	insertElem(&list, 2, 18);//调用上面的插入函数
+	listElem(&list);//插入后再遍历一次
+	ElemType deldata;
+	deletElem(&list, 3, &deldata);//调用删除函数
+	printf("被删除的数据为：%d\n",deldata);
+	listElem(&list);
+	return 0;
+}
